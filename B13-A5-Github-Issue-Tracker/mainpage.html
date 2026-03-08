@@ -1,215 +1,562 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-<title>GitHub Issues Tracker</title>
-
-<script src="https://cdn.tailwindcss.com"></script>
-
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>GitHub Issues Tracker</title>
+  <script src="https://cdn.tailwindcss.com"></script>
 </head>
-
-<body class="bg-gray-100">
-
-<!-- NAVBAR -->
-<nav class="bg-white shadow p-4 flex justify-between items-center">
-
-<div class="flex items-center gap-2">
-
-<img src="https://github.githubassets.com/images/modules/logos_page/GitHub-Mark.png" class="w-8">
-
-<h1 class="font-bold text-lg">Issues Tracker</h1>
-
-</div>
-
-<div class="flex gap-2">
-
-<input
-type="text"
-placeholder="Search issues..."
-class="border rounded px-3 py-1"
-/>
-
-<button class="bg-blue-600 text-white px-4 py-1 rounded">
-Search
-</button>
-
-</div>
-
-</nav>
-
-
-<!-- MAIN CONTAINER -->
-
-<div class="max-w-6xl mx-auto p-4">
-
-<!-- HEADER -->
-
-<div class="flex justify-between items-center mb-6 flex-wrap gap-3">
-
-<div>
-
-<h2 class="text-2xl font-bold">All Issues</h2>
-
-<p class="text-gray-500">Track and manage your project issues</p>
-
-</div>
-
-<!-- ISSUE COUNT -->
-
-<div class="flex items-center gap-3">
-
-<div class="bg-blue-100 text-blue-700 px-3 py-2 rounded font-bold">
-50 Issues
-</div>
-
-</div>
-
-</div>
-
-
-<!-- TABS -->
-
-<div class="flex gap-3 mb-6">
-
-<button onclick="changeTab('all')" class="tab-btn bg-blue-600 text-white px-4 py-1 rounded">
-All
-</button>
-
-<button onclick="changeTab('open')" class="tab-btn border px-4 py-1 rounded">
-Open
-</button>
-
-<button onclick="changeTab('closed')" class="tab-btn border px-4 py-1 rounded">
-Closed
-</button>
-
-</div>
-
-
-<!-- ISSUES GRID -->
-
-<div id="issuesList" class="grid md:grid-cols-2 gap-4"></div>
-
-</div>
-
-
-<script>
-
-let issues = [
-
-{
-title:"Fix navigation menu on mobile devices",
-desc:"The navigation menu does not collapse properly on mobile devices.",
-type:"bug",
-status:"open"
-},
-
-{
-title:"Add dark mode support",
-desc:"Users should be able to switch between light and dark themes.",
-type:"enhancement",
-status:"open"
-},
-
-{
-title:"Update README with installation instructions",
-desc:"The README file needs better instructions for new developers.",
-type:"documentation",
-status:"closed"
-},
-
-{
-title:"Fix broken image uploads",
-desc:"Users cannot upload images larger than 5MB.",
-type:"bug",
-status:"open"
-},
-
-{
-title:"Add user authentication system",
-desc:"Implement login and signup functionality.",
-type:"enhancement",
-status:"closed"
-},
-
-{
-title:"Performance issues with large databases",
-desc:"Loading becomes slow with more than 1000 items.",
-type:"bug",
-status:"open"
-}
-
-]
-
-
-let currentTab = "all"
-
-
-function changeTab(tab){
-
-currentTab = tab
-
-renderIssues()
-
-}
-
-
-function renderIssues(){
-
-const list = document.getElementById("issuesList")
-
-list.innerHTML = ""
-
-let filtered = issues
-
-if(currentTab === "open"){
-
-filtered = issues.filter(i => i.status === "open")
-
-}
-
-if(currentTab === "closed"){
-
-filtered = issues.filter(i => i.status === "closed")
-
-}
-
-
-filtered.forEach(issue => {
-
-list.innerHTML += `
-
-<div class="bg-white p-4 rounded shadow border-l-4 border-green-500">
-
-<h3 class="font-bold text-lg">${issue.title}</h3>
-
-<p class="text-gray-500 text-sm mb-3">${issue.desc}</p>
-
-<div class="flex justify-between items-center">
-
-<span class="text-xs bg-yellow-100 px-2 py-1 rounded">
-${issue.type}
-</span>
-
-<span class="text-sm ${issue.status === "open" ? "text-green-600" : "text-blue-600"}">
-${issue.status}
-</span>
-
-</div>
-
-</div>
-
-`
-
-})
-
-}
-
-renderIssues()
-
-</script>
-
+<body class="bg-[#f8fafc] text-slate-900">
+
+  <!-- Navbar -->
+  <nav class="bg-white border-b border-slate-200">
+    <div class="max-w-7xl mx-auto px-4 py-4 flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+      <div class="flex items-center gap-3">
+        <img
+          src="assets/github-logo.png"
+          alt="GitHub Logo"
+          class="w-8 h-8 object-contain"
+        />
+        <h1 class="text-2xl font-bold">GitHub Issues Tracker</h1>
+      </div>
+
+      <div class="flex items-center gap-3">
+        <input
+          id="searchInput"
+          type="text"
+          placeholder="Search issues..."
+          class="w-56 md:w-72 border border-slate-300 rounded-lg px-4 py-2 outline-none focus:ring-2 focus:ring-blue-500"
+        />
+        <button
+          id="searchBtn"
+          class="bg-blue-600 hover:bg-blue-700 text-white px-5 py-2 rounded-lg font-medium"
+        >
+          Search
+        </button>
+      </div>
+    </div>
+  </nav>
+
+  <main class="max-w-7xl mx-auto px-4 py-6">
+    <!-- Top Section -->
+    <div class="grid grid-cols-1 lg:grid-cols-[220px_1fr_220px] gap-4 items-start mb-6">
+      <!-- Left -->
+      <div>
+        <h2 class="text-4xl font-bold mb-4">All Issues</h2>
+
+        <div class="flex flex-wrap gap-2">
+          <button
+            id="tab-all"
+            onclick="changeTab('all')"
+            class="tab-btn bg-blue-600 text-white px-4 py-2 rounded-xl font-medium"
+          >
+            All
+          </button>
+
+          <button
+            id="tab-open"
+            onclick="changeTab('open')"
+            class="tab-btn border border-slate-300 bg-white px-4 py-2 rounded-xl font-medium"
+          >
+            Open
+          </button>
+
+          <button
+            id="tab-closed"
+            onclick="changeTab('closed')"
+            class="tab-btn border border-slate-300 bg-white px-4 py-2 rounded-xl font-medium"
+          >
+            Closed
+          </button>
+        </div>
+      </div>
+
+      <!-- Middle counter card -->
+      <div class="bg-white border border-slate-200 rounded-2xl p-5 flex items-center gap-4 shadow-sm">
+        <div class="w-14 h-14 rounded-2xl bg-violet-100 flex items-center justify-center">
+          <span class="text-2xl">⠿</span>
+        </div>
+        <div>
+          <h3 id="issueCount" class="text-3xl font-bold">20 Issues</h3>
+          <p class="text-slate-500">Track and manage your project issues</p>
+        </div>
+      </div>
+
+      <!-- Right legend -->
+      <div class="bg-white border border-slate-200 rounded-2xl p-5 shadow-sm">
+        <div class="flex items-center gap-3 mb-3">
+          <span class="w-3 h-3 rounded-full bg-green-600 inline-block"></span>
+          <span class="font-medium">Open</span>
+        </div>
+        <div class="flex items-center gap-3">
+          <span class="w-3 h-3 rounded-full bg-violet-600 inline-block"></span>
+          <span class="font-medium">Closed</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Loading -->
+    <div id="loader" class="hidden py-12 text-center">
+      <div class="w-10 h-10 border-4 border-blue-600 border-t-transparent rounded-full animate-spin mx-auto"></div>
+      <p class="mt-3 text-slate-500">Loading issues...</p>
+    </div>
+
+    <!-- Cards -->
+    <div
+      id="issuesGrid"
+      class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-5"
+    ></div>
+  </main>
+
+  <!-- Modal -->
+  <div
+    id="issueModal"
+    class="hidden fixed inset-0 bg-black/40 z-50 items-center justify-center px-4"
+  >
+    <div class="bg-white rounded-2xl max-w-xl w-full p-6 relative">
+      <button
+        onclick="closeModal()"
+        class="absolute top-4 right-4 text-slate-500 hover:text-slate-800 text-2xl"
+      >
+        ×
+      </button>
+
+      <h3 id="modalTitle" class="text-2xl font-bold mb-3"></h3>
+      <p id="modalDesc" class="text-slate-600 mb-4"></p>
+
+      <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 text-sm">
+        <p><span class="font-semibold">Status:</span> <span id="modalStatus"></span></p>
+        <p><span class="font-semibold">Author:</span> <span id="modalAuthor"></span></p>
+        <p><span class="font-semibold">Priority:</span> <span id="modalPriority"></span></p>
+        <p><span class="font-semibold">Level:</span> <span id="modalLevel"></span></p>
+        <p><span class="font-semibold">Created At:</span> <span id="modalCreated"></span></p>
+      </div>
+
+      <div class="mt-4">
+        <p class="font-semibold mb-2">Labels:</p>
+        <div id="modalLabels" class="flex flex-wrap gap-2"></div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const issues = [
+      {
+        id: 1,
+        title: "Fix navigation menu on mobile devices",
+        description: "The navigation menu does not collapse properly on mobile devices. Need to fix the responsive behavior.",
+        status: "open",
+        author: "@moumita",
+        priority: "HIGH",
+        level: "BUG",
+        createdAt: "17/7/2025",
+        labels: ["BUG", "HELP WANTED"]
+      },
+      {
+        id: 2,
+        title: "Add dark mode support",
+        description: "Users are requesting a dark mode option. This would improve accessibility and user experience.",
+        status: "open",
+        author: "@moumita",
+        priority: "MEDIUM",
+        level: "ENHANCEMENT",
+        createdAt: "17/7/2025",
+        labels: ["ENHANCEMENT", "GOOD FIRST ISSUE"]
+      },
+      {
+        id: 3,
+        title: "Update README with installation instructions",
+        description: "The README file needs better installation instructions for new contributors.",
+        status: "closed",
+        author: "@moumita",
+        priority: "LOW",
+        level: "DOCUMENTATION",
+        createdAt: "17/7/2025",
+        labels: ["DOCUMENTATION"]
+      },
+      {
+        id: 4,
+        title: "Fix broken image uploads",
+        description: "Users are unable to upload images larger than 5MB. Need to improve file size limit handling.",
+        status: "open",
+        author: "@moumita",
+        priority: "HIGH",
+        level: "BUG",
+        createdAt: "17/7/2025",
+        labels: ["BUG", "URGENT"]
+      },
+      {
+        id: 5,
+        title: "Add user authentication system",
+        description: "Implement JWT-based authentication with login, registration, and protected route functionality.",
+        status: "closed",
+        author: "@moumita",
+        priority: "MEDIUM",
+        level: "ENHANCEMENT",
+        createdAt: "17/7/2025",
+        labels: ["ENHANCEMENT", "SECURITY"]
+      },
+      {
+        id: 6,
+        title: "Performance issues with large datasets",
+        description: "Application becomes slow when loading more than 1000 items. Need to implement pagination or virtualization.",
+        status: "open",
+        author: "@moumita",
+        priority: "HIGH",
+        level: "PERFORMANCE",
+        createdAt: "17/7/2025",
+        labels: ["PERFORMANCE", "OPTIMIZATION"]
+      },
+      {
+        id: 7,
+        title: "Improve button hover states",
+        description: "Some action buttons need consistent hover and active state styles across the interface.",
+        status: "closed",
+        author: "@moumita",
+        priority: "LOW",
+        level: "UI",
+        createdAt: "17/7/2025",
+        labels: ["UI", "DESIGN"]
+      },
+      {
+        id: 8,
+        title: "Add forgot password flow",
+        description: "Users should be able to reset their password securely using email verification.",
+        status: "open",
+        author: "@moumita",
+        priority: "MEDIUM",
+        level: "FEATURE",
+        createdAt: "17/7/2025",
+        labels: ["FEATURE", "AUTH"]
+      },
+      {
+        id: 9,
+        title: "Fix sidebar overlap issue",
+        description: "Sidebar overlaps content on smaller laptop screens. Layout should adjust properly.",
+        status: "open",
+        author: "@moumita",
+        priority: "HIGH",
+        level: "BUG",
+        createdAt: "17/7/2025",
+        labels: ["BUG", "RESPONSIVE"]
+      },
+      {
+        id: 10,
+        title: "Refactor API service layer",
+        description: "Current API calls are repeated in multiple components. Refactor into a reusable service layer.",
+        status: "closed",
+        author: "@moumita",
+        priority: "MEDIUM",
+        level: "REFACTOR",
+        createdAt: "17/7/2025",
+        labels: ["REFACTOR", "CLEAN CODE"]
+      },
+      {
+        id: 11,
+        title: "Add issue sorting options",
+        description: "Users want to sort issues by priority, date, and status from the issues dashboard.",
+        status: "open",
+        author: "@moumita",
+        priority: "LOW",
+        level: "FEATURE",
+        createdAt: "17/7/2025",
+        labels: ["FEATURE", "UX"]
+      },
+      {
+        id: 12,
+        title: "Fix modal closing on backdrop click",
+        description: "Issue details modal should close when users click outside the modal content area.",
+        status: "closed",
+        author: "@moumita",
+        priority: "LOW",
+        level: "BUG",
+        createdAt: "17/7/2025",
+        labels: ["BUG", "MODAL"]
+      },
+      {
+        id: 13,
+        title: "Add loading spinner for API calls",
+        description: "A loading spinner should be displayed while fetching issues from the API.",
+        status: "open",
+        author: "@moumita",
+        priority: "MEDIUM",
+        level: "UX",
+        createdAt: "17/7/2025",
+        labels: ["UX", "LOADING"]
+      },
+      {
+        id: 14,
+        title: "Improve card shadow and spacing",
+        description: "Cards need better spacing and more polished shadows to match the design system.",
+        status: "closed",
+        author: "@moumita",
+        priority: "LOW",
+        level: "DESIGN",
+        createdAt: "17/7/2025",
+        labels: ["DESIGN", "UI"]
+      },
+      {
+        id: 15,
+        title: "Implement search functionality",
+        description: "Users should be able to search issues by title, description, author, or label.",
+        status: "open",
+        author: "@moumita",
+        priority: "HIGH",
+        level: "FEATURE",
+        createdAt: "17/7/2025",
+        labels: ["FEATURE", "SEARCH"]
+      },
+      {
+        id: 16,
+        title: "Fix footer alignment on tablet",
+        description: "Footer content becomes misaligned on tablet devices and needs responsive adjustment.",
+        status: "open",
+        author: "@moumita",
+        priority: "MEDIUM",
+        level: "RESPONSIVE",
+        createdAt: "17/7/2025",
+        labels: ["RESPONSIVE", "LAYOUT"]
+      },
+      {
+        id: 17,
+        title: "Update issue detail modal UI",
+        description: "Improve the layout and readability of the issue modal to match the project design.",
+        status: "closed",
+        author: "@moumita",
+        priority: "LOW",
+        level: "UI",
+        createdAt: "17/7/2025",
+        labels: ["UI", "MODAL"]
+      },
+      {
+        id: 18,
+        title: "Add toast messages on actions",
+        description: "Display success and error toast messages when users perform actions like update or delete.",
+        status: "open",
+        author: "@moumita",
+        priority: "MEDIUM",
+        level: "UX",
+        createdAt: "17/7/2025",
+        labels: ["UX", "FEEDBACK"]
+      },
+      {
+        id: 19,
+        title: "Reduce bundle size",
+        description: "Analyze and reduce the frontend bundle size to improve page load performance.",
+        status: "closed",
+        author: "@moumita",
+        priority: "HIGH",
+        level: "PERFORMANCE",
+        createdAt: "17/7/2025",
+        labels: ["PERFORMANCE", "BUILD"]
+      },
+      {
+        id: 20,
+        title: "Add pagination for issues list",
+        description: "Large issue collections need pagination support for better usability and faster rendering.",
+        status: "open",
+        author: "@moumita",
+        priority: "HIGH",
+        level: "FEATURE",
+        createdAt: "17/7/2025",
+        labels: ["FEATURE", "PAGINATION"]
+      }
+    ];
+
+    let currentTab = "all";
+    let currentSearch = "";
+
+    const issuesGrid = document.getElementById("issuesGrid");
+    const issueCount = document.getElementById("issueCount");
+    const loader = document.getElementById("loader");
+    const searchInput = document.getElementById("searchInput");
+    const searchBtn = document.getElementById("searchBtn");
+
+    function getFilteredIssues() {
+      let filtered = [...issues];
+
+      if (currentTab === "open") {
+        filtered = filtered.filter(issue => issue.status === "open");
+      } else if (currentTab === "closed") {
+        filtered = filtered.filter(issue => issue.status === "closed");
+      }
+
+      if (currentSearch.trim()) {
+        const q = currentSearch.toLowerCase();
+        filtered = filtered.filter(issue =>
+          issue.title.toLowerCase().includes(q) ||
+          issue.description.toLowerCase().includes(q) ||
+          issue.author.toLowerCase().includes(q) ||
+          issue.priority.toLowerCase().includes(q) ||
+          issue.level.toLowerCase().includes(q) ||
+          issue.labels.some(label => label.toLowerCase().includes(q))
+        );
+      }
+
+      return filtered;
+    }
+
+    function changeTab(tab) {
+      currentTab = tab;
+
+      document.getElementById("tab-all").className =
+        "tab-btn border border-slate-300 bg-white px-4 py-2 rounded-xl font-medium";
+      document.getElementById("tab-open").className =
+        "tab-btn border border-slate-300 bg-white px-4 py-2 rounded-xl font-medium";
+      document.getElementById("tab-closed").className =
+        "tab-btn border border-slate-300 bg-white px-4 py-2 rounded-xl font-medium";
+
+      document.getElementById(`tab-${tab}`).className =
+        "tab-btn bg-blue-600 text-white px-4 py-2 rounded-xl font-medium";
+
+      renderIssues();
+    }
+
+    function getLabelClass(label) {
+      const map = {
+        "BUG": "bg-amber-200 text-amber-900",
+        "HELP WANTED": "bg-orange-200 text-orange-900",
+        "ENHANCEMENT": "bg-lime-200 text-lime-900",
+        "GOOD FIRST ISSUE": "bg-yellow-200 text-yellow-900",
+        "DOCUMENTATION": "bg-orange-200 text-orange-900",
+        "URGENT": "bg-red-200 text-red-900",
+        "SECURITY": "bg-cyan-200 text-cyan-900",
+        "PERFORMANCE": "bg-sky-200 text-sky-900",
+        "OPTIMIZATION": "bg-violet-200 text-violet-900",
+        "UI": "bg-pink-200 text-pink-900",
+        "DESIGN": "bg-rose-200 text-rose-900",
+        "FEATURE": "bg-emerald-200 text-emerald-900",
+        "AUTH": "bg-indigo-200 text-indigo-900",
+        "RESPONSIVE": "bg-teal-200 text-teal-900",
+        "REFACTOR": "bg-purple-200 text-purple-900",
+        "CLEAN CODE": "bg-fuchsia-200 text-fuchsia-900",
+        "UX": "bg-green-200 text-green-900",
+        "MODAL": "bg-blue-200 text-blue-900",
+        "LOADING": "bg-slate-200 text-slate-900",
+        "LAYOUT": "bg-cyan-200 text-cyan-900",
+        "SEARCH": "bg-yellow-200 text-yellow-900",
+        "FEEDBACK": "bg-pink-200 text-pink-900",
+        "BUILD": "bg-gray-200 text-gray-900",
+        "PAGINATION": "bg-indigo-200 text-indigo-900"
+      };
+
+      return map[label] || "bg-slate-200 text-slate-900";
+    }
+
+    function getPriorityClass(priority) {
+      if (priority === "HIGH") return "bg-pink-100 text-pink-700";
+      if (priority === "MEDIUM") return "bg-amber-100 text-amber-700";
+      return "bg-slate-100 text-slate-700";
+    }
+
+    function renderIssues() {
+      loader.classList.remove("hidden");
+      issuesGrid.innerHTML = "";
+
+      setTimeout(() => {
+        const filtered = getFilteredIssues();
+        issueCount.textContent = `${filtered.length} Issues`;
+
+        issuesGrid.innerHTML = filtered.map(issue => `
+          <div
+            onclick="openModal(${issue.id})"
+            class="bg-white rounded-2xl shadow-sm border border-slate-200 border-t-4 ${issue.status === "open" ? "border-t-green-600" : "border-t-violet-600"} p-4 cursor-pointer hover:shadow-md transition"
+          >
+            <div class="flex items-start justify-between gap-3 mb-3">
+              <div class="flex items-center gap-2">
+                <span class="w-5 h-5 rounded-full border-2 ${issue.status === "open" ? "border-green-600 text-green-600" : "border-violet-600 text-violet-600"} inline-flex items-center justify-center text-xs font-bold">
+                  ${issue.status === "open" ? "○" : "✓"}
+                </span>
+              </div>
+
+              <div class="flex items-center gap-2">
+                <span class="text-xs font-semibold px-2 py-1 rounded-full ${getPriorityClass(issue.priority)}">
+                  ${issue.priority}
+                </span>
+
+                <button
+                  onclick="event.stopPropagation(); updateIssueStatus(${issue.id})"
+                  class="${issue.status === "open" ? "bg-green-600 hover:bg-green-700" : "bg-violet-600 hover:bg-violet-700"} text-white text-xs font-medium px-3 py-1 rounded-full"
+                >
+                  ${issue.status === "open" ? "Open" : "Closed"}
+                </button>
+              </div>
+            </div>
+
+            <h3 class="text-[22px] leading-7 font-bold mb-2">${issue.title}</h3>
+            <p class="text-slate-600 text-sm leading-6 mb-4">${issue.description}</p>
+
+            <div class="flex flex-wrap gap-2 mb-4">
+              ${issue.labels.map(label => `
+                <span class="text-[11px] font-bold px-2 py-1 rounded-full ${getLabelClass(label)}">
+                  ${label}
+                </span>
+              `).join("")}
+            </div>
+
+            <div class="grid grid-cols-2 gap-x-4 gap-y-2 text-xs text-slate-500">
+              <p>#${issue.id} by ${issue.author}</p>
+              <p class="text-right">${issue.level}</p>
+              <p>Created ${issue.createdAt}</p>
+              <p class="text-right">Updated ${issue.createdAt}</p>
+            </div>
+          </div>
+        `).join("");
+
+        loader.classList.add("hidden");
+      }, 400);
+    }
+
+    function updateIssueStatus(id) {
+      const issue = issues.find(item => item.id === id);
+      if (!issue) return;
+
+      issue.status = issue.status === "open" ? "closed" : "open";
+      renderIssues();
+    }
+
+    function openModal(id) {
+      const issue = issues.find(item => item.id === id);
+      if (!issue) return;
+
+      document.getElementById("modalTitle").textContent = issue.title;
+      document.getElementById("modalDesc").textContent = issue.description;
+      document.getElementById("modalStatus").textContent = issue.status;
+      document.getElementById("modalAuthor").textContent = issue.author;
+      document.getElementById("modalPriority").textContent = issue.priority;
+      document.getElementById("modalLevel").textContent = issue.level;
+      document.getElementById("modalCreated").textContent = issue.createdAt;
+
+      document.getElementById("modalLabels").innerHTML = issue.labels.map(label => `
+        <span class="text-xs font-bold px-2 py-1 rounded-full ${getLabelClass(label)}">
+          ${label}
+        </span>
+      `).join("");
+
+      const modal = document.getElementById("issueModal");
+      modal.classList.remove("hidden");
+      modal.classList.add("flex");
+    }
+
+    function closeModal() {
+      const modal = document.getElementById("issueModal");
+      modal.classList.add("hidden");
+      modal.classList.remove("flex");
+    }
+
+    searchBtn.addEventListener("click", () => {
+      currentSearch = searchInput.value;
+      renderIssues();
+    });
+
+    searchInput.addEventListener("keyup", (e) => {
+      if (e.key === "Enter") {
+        currentSearch = searchInput.value;
+        renderIssues();
+      }
+    });
+
+    renderIssues();
+  </script>
 </body>
 </html>
